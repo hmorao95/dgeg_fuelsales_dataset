@@ -1,0 +1,11 @@
+# Excel lock/temp files
+~$*
+*.tmp
+
+# Local duplicates / superseded originals (kept locally, not published)
+_archive/
+
+# OS cruft
+Thumbs.db
+.DS_Store
+desktop.ini

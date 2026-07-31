@@ -1,0 +1,7 @@
+Foram adicionadas observações zero de Propileno durante 2012-2015.
+
+Dado que nome de alguns productos mudou com o tempo para efeitos de notação assumi:
+Fuel (EDP+Tejo) = Fuel para produção eléctrica
+Thin-Fuel-Oil = Fuelóleo nº3 BTE
+Thick-Fuel-Oil 1%S = Fuelóleo nº4 BTE
+Thick-Fuel-Oil 3,5%S = Fuelóleo nº4 ATE	 
