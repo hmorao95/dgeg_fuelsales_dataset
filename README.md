@@ -16,9 +16,10 @@ dgeg_fuel_organized/
 │   └── processed/
 │       ├── dataset_fuel_sales.xlsx   # INPUT to main.do (one sheet per year)
 │       └── complete_fuel_sales.xlsx
-├── output/
-│   ├── oil_products_panel.dta        # long panel (product × year × month)
-│   └── oil_products_wide.xlsx        # wide export
+├── output/                           # all cover 1995m1–2026m8
+│   ├── oil_products_panel.dta / .csv       # long panel (product × month)
+│   ├── oil_products_wide.xlsx / .csv       # wide: one column per product
+│   └── oil_products_timeseries.xlsx / .csv # wide, gap-free monthly index
 └── _archive/          # duplicates, stale Excel lock file, loose originals
 ```
 
