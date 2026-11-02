@@ -1,7 +1,7 @@
 # Data dictionary — DGEG fuel sales
 
-Applies to `output/oil_products_panel.csv`, `output/oil_products_wide.*` and
-`output/oil_products_timeseries.*`.
+Applies to `outputs/oil_products_panel.csv`, `outputs/oil_products_wide.*` and
+`outputs/oil_products_timeseries.*`.
 
 ## Panel file (`oil_products_panel.csv`)
 
@@ -128,7 +128,7 @@ gap-free monthly index; blank cells mean the product had no reported sales that 
 | `Bioetanol incorporado na gasolina` | Bioethanol blended into gasoline | |
 | `Biogasolina incorporada` | Biogasoline incorporated | |
 
-## Naming assumptions (from `code/notas.txt`)
+## Naming assumptions (from `data/processed/notas.txt`)
 
 Product names changed over time; for consistency the source workbook assumes:
 

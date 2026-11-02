@@ -1,0 +1,230 @@
+[project]
+name = "dgeg-fuelsales"
+version = "1.1.0"
+description = "Monthly sales of 50 oil products in Portugal (tonnes), 1995m1 onwards, from DGEG statistics, with a Python pipeline to update and rebuild the dataset."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "CC-BY-4.0" }
+authors = [{ name = "Hugo Morão", email = "hfmorao@gmail.com" }]
+keywords = ["dgeg", "portugal", "energy", "oil", "fuel-sales", "dataset"]
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "openpyxl>=3.1",
+    "requests>=2.28",
+    # Shared plumbing (logging, CLI helpers), by tag.
+    "wrapkit @ git+https://github.com/hmorao95/wrapkit@v0.2.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/hmorao95/dgeg_fuelsales_dataset"
+Repository = "https://github.com/hmorao95/dgeg_fuelsales_dataset"
+"Data source" = "https://www.dgeg.gov.pt/pt/estatistica/energia/petroleo-e-derivados/vendas-mensais/"
+
+[project.scripts]
+dgeg-fuelsales = "dgeg_fuelsales.core:main"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.4.8",
+    "mypy>=1.8",
+    "codespell>=2.2.6",
+    "deptry>=0.16",
+    "interrogate>=1.7",
+    "coverage>=7.4",
+    "pytest>=8.1",
+    "pytest-cov>=5.0",
+    "pytest-sugar>=1.0",
+]
+typing = [
+    "pandas-stubs>=2.2",
+    "types-openpyxl>=3.1",
+    "types-requests>=2.32",
+]
+docs = [
+    "sphinx>=7.3",
+    "pydata-sphinx-theme>=0.15",
+    "myst-parser>=3.0",
+]
+
+[tool.uv]
+default-groups = ["dev", "typing"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+# wrapkit is installed from GitHub by tag (it is not on PyPI).
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dgeg_fuelsales"]
+
+# --------------------------------------------------------------------------- #
+# codespell
+# --------------------------------------------------------------------------- #
+[tool.codespell]
+skip = "*.lock,.git,.venv,*.csv,*.xlsx,*.xls"
+# Portuguese product and month names from the DGEG files, not typos.
+ignore-words-list = "setores,marcado,parafinas,solventes,asfaltos,propano,butano,abril"
+
+# --------------------------------------------------------------------------- #
+# interrogate (docstring coverage)
+# --------------------------------------------------------------------------- #
+[tool.interrogate]
+verbose = 2
+fail-under = 95
+ignore-nested-functions = true
+
+# --------------------------------------------------------------------------- #
+# ruff
+# --------------------------------------------------------------------------- #
+[tool.ruff]
+target-version = "py310"
+src = ["src", "tests"]
+line-length = 88
+indent-width = 4
+# The Sphinx config is boilerplate with its own conventions; keep it out of the
+# lint/format surface (docstring coverage and typing gates ignore it too).
+extend-exclude = ["docs"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+exclude = [
+    ".github/*",
+    ".pytest_cache",
+]
+
+[tool.ruff.lint]
+preview = true
+select = [
+    "A",      # flake8-builtins
+    "ANN",    # flake8-annotations
+    "ARG",    # flake8-unused-arguments
+    "ASYNC",  # flake8-async
+    "B",      # flake8-bugbear
+    "BLE",    # flake8-blind-except
+    "C4",     # flake8-comprehensions
+    "C90",    # cognitive complexity
+    "COM",    # flake8-commas
+    "D",      # pydocstyle
+    "DOC",    # pydoclint (docstring Returns/Raises match the code)
+    "DTZ",    # flake8-datetimez
+    "E",      # pycodestyle errors
+    "EM",     # flake8-errmsg
+    "ERA",    # flake8-eradicate
+    "EXE",    # flake8-executable
+    "F",      # pyflakes
+    "FA",     # flake8-future-annotations
+    "FBT",    # boolean trap
+    "FLY",    # flynt
+    "FURB",   # refurb
+    "G",      # flake8-logging-format
+    "I",      # isort
+    "ICN",    # flake8-import-conventions
+    "INT",    # flake8-gettext
+    "ISC",    # implicit-str-concat
+    "LOG",    # flake8-logging
+    "N",      # pep8-naming
+    "NPY",    # numPy-specific rules
+    "PD",     # pandas-vet
+    "PERF",   # perflint
+    "PGH",    # pygrep-hooks
+    "PIE",    # flake8-pie
+    "PL",     # pylint
+    "PT",     # flake8-pytest-style
+    "PTH",    # flake8-use-pathlib
+    "PYI",    # flake8-pyi
+    "Q",      # flake8-quotes
+    "RET",    # flake8-return
+    "RSE",    # flake8-raise
+    "RUF",    # Ruff-specific lints
+    "S",      # flake8-bandit
+    "SIM",    # flake8-simplify
+    "SLF",    # flake8-self
+    "SLOT",   # flake8-slots
+    "T10",    # flake8-debugger
+    "T20",    # flake8-print
+    "TCH",    # flake8-type-checking
+    "relative-imports", # ban relative imports
+    "TRY",    # tryceratops
+    "UP",     # pyupgrade
+    "W",      # pycodestyle warnings
+    "YTT",    # flake8-2020
+]
+ignore = [
+    "multi-line-summary-first-line",   # Multi-line docstring summary should start at the first line
+    "import-outside-top-level",# `import` should be at the top-level of a file
+    "boolean-type-hint-positional-argument", # Boolean-typed positional argument in function definition
+    "boolean-default-value-positional-argument", # Boolean default positional argument in function definition
+    "missing-trailing-comma", # conflict with using ruff-format
+    "single-line-implicit-string-concatenation", # conflict with using ruff-format
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "unused-function-argument", # Unused function argument
+    "assert",   # Use of `assert` detected
+    "private-member-access", # Private member accessed
+    "magic-value-comparison",# Magic value used in comparison
+    "line-too-long",   # long lines in the fixture rows are readable as-is
+    "DOC",    # pydoclint: don't burden test helpers/fixtures with it
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 150
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.lint.flake8-type-checking]
+strict = true
+
+[tool.ruff.lint.flake8-unused-arguments]
+ignore-variadic-names = true
+
+# --------------------------------------------------------------------------- #
+# mypy
+# --------------------------------------------------------------------------- #
+[tool.mypy]
+files = ["src", "tests"]
+pretty = true
+strict = true
+show_error_context = true
+ignore_missing_imports = true
+mypy_path = "src"
+
+# --------------------------------------------------------------------------- #
+# pytest / coverage
+# --------------------------------------------------------------------------- #
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-v --force-sugar --cov=src --cov-report=term-missing"
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning",
+]
+
+[tool.coverage.paths]
+source = ["src"]
+
+[tool.coverage.report]
+fail_under = 92
+skip_empty = true
+show_missing = true
+exclude_also = [
+    "if TYPE_CHECKING:",
+]
+
+[tool.coverage.run]
+parallel = true
+source = ["dgeg_fuelsales"]
