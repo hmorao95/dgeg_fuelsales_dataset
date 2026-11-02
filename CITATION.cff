@@ -1,18 +1,18 @@
 cff-version: 1.2.0
 message: "If you use this dataset, please cite it as below, and cite the original DGEG source."
-title: "DGEG fuel sales dataset: monthly oil-product sales in Portugal, 1995m1–2026m5"
+title: "DGEG fuel sales dataset: monthly oil-product sales in Portugal, 1995m1–2026m8"
 type: dataset
 authors:
   - family-names: "Morão"
     given-names: "Hugo"
-version: "1.0.0"
+version: "1.1.0"
 date-released: "2026-11-02"
 license: CC-BY-4.0
 repository-code: "https://github.com/hmorao95/dgeg_fuelsales_dataset"
 url: "https://github.com/hmorao95/dgeg_fuelsales_dataset"
 abstract: >-
   Monthly sales of 50 oil products in Portugal (tonnes), from January 1995
-  to May 2026, compiled from DGEG (Direção-Geral de Energia e Geologia)
+  to August 2026, compiled from DGEG (Direção-Geral de Energia e Geologia)
   statistics. Provided as a long panel (Stata .dta) and as wide monthly
   time series (CSV/XLSX), with the Stata code used to build them.
 keywords:

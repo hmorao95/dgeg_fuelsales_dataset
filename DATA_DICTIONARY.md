@@ -6,15 +6,15 @@ Applies to `output/oil_products_wide.*` and `output/oil_products_timeseries.*`.
 
 | Column | Description |
 |---|---|
-| `period` | Month in Stata monthly format, e.g. `1995m1`, `2026m5`. |
+| `period` | Month in Stata monthly format, e.g. `1995m1`, `2026m8`. |
 | `date_monthly` | First day of the month, ISO date `YYYY-MM-01` (wide files only). |
 
-Coverage: **1995m1 – 2026m5**, monthly. `oil_products_timeseries.*` has a
+Coverage: **1995m1 – 2026m8**, monthly. `oil_products_timeseries.*` has a
 gap-free monthly index; blank cells mean the product had no reported sales that month.
 
 ## Units & conventions
 
-- **Units:** metric tonnes (t), as published by DGEG. *(Verify against the DGEG source note if using for precise energy-balance work.)*
+- **Units:** metric tonnes (t) — DGEG files state "unidade: tonelada".
 - **BTE** = *baixo teor de enxofre* (low-sulphur); **ATE** = *alto teor de enxofre* (high-sulphur).
 - **`marítimo`** = marine/bunker variant of the product.
 - Blank/empty = not reported (not zero). Genuine zeros are stored as `0`.
