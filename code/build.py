@@ -10,7 +10,7 @@ Writes to output/:
   oil_products_timeseries.csv / .xlsx same, gap-free monthly index
 
 Run:  python code/build.py [--also-to DIR ...]
-      --also-to copies the output files to other folders as well.
+      --also-to copies the output files and the source workbook to other folders.
 """
 from pathlib import Path
 import argparse
@@ -100,7 +100,7 @@ OUTPUTS = ["oil_products_panel.csv", "oil_products_wide.csv", "oil_products_wide
 def main():
     parser = argparse.ArgumentParser(description="Build output/ from the workbook.")
     parser.add_argument("--also-to", nargs="+", default=[], metavar="DIR",
-                        help="also copy the output files to these folders")
+                        help="also copy the output files and the source workbook to these folders")
     args = parser.parse_args()
 
     p = read_panel()
@@ -136,7 +136,8 @@ def main():
     for folder in map(Path, args.also_to):
         for name in OUTPUTS:
             shutil.copy2(OUT / name, folder / name)
-        print("copied outputs to", folder)
+        shutil.copy2(SRC, folder / SRC.name)
+        print("copied outputs and workbook to", folder)
 
 
 if __name__ == "__main__":

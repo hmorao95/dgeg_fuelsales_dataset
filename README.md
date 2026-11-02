@@ -38,7 +38,7 @@ Rebuild every file in `output/` from the workbook:
 python code/build.py
 ```
 
-Add `--also-to DIR` to copy the output files to another folder as well.
+Add `--also-to DIR` to copy the output files and the source workbook to another folder as well.
 
 Monthly update, when DGEG publishes a new month:
 
