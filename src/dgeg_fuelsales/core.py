@@ -70,6 +70,7 @@ if TYPE_CHECKING:
     # these names are used purely in annotations.
     from collections.abc import Iterable
 
+    import numpy.typing as npt
     from openpyxl.worksheet.worksheet import Worksheet
 
 __all__ = [
@@ -435,12 +436,14 @@ def _column_for(label: str, section: str) -> str | None:
     return _COLUMNS.get(label)
 
 
-def _locate(grid: np.ndarray, labels: list[str], path: str | Path) -> tuple[int, int]:
+def _locate(
+    grid: npt.NDArray[np.object_], labels: list[str], path: str | Path
+) -> tuple[int, int]:
     """
     Find a DGEG file's year and the row of its month header.
 
     Args:
-        grid (np.ndarray): The sheet's cells, row by row.
+        grid (npt.NDArray[np.object_]): The sheet's cells, row by row.
         labels (list[str]): The cleaned first-column labels.
         path (str | Path): The file, for error messages.
 
@@ -466,7 +469,7 @@ def _locate(grid: np.ndarray, labels: list[str], path: str | Path) -> tuple[int,
 
 
 def _product_rows(
-    grid: np.ndarray, labels: list[str], header: int, path: str | Path
+    grid: npt.NDArray[np.object_], labels: list[str], header: int, path: str | Path
 ) -> dict[str, list[float]]:
     """
     Read a DGEG file's product rows into workbook columns.
@@ -475,7 +478,7 @@ def _product_rows(
     blank rows, the ``Memo Fuel`` heading and the ``Do qual ...`` breakdowns.
 
     Args:
-        grid (np.ndarray): The sheet's cells, row by row.
+        grid (npt.NDArray[np.object_]): The sheet's cells, row by row.
         labels (list[str]): The cleaned first-column labels.
         header (int): Index of the month header row.
         path (str | Path): The file, for error messages.

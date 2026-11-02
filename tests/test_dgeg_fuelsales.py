@@ -549,7 +549,7 @@ def test_build_fills_gaps_in_index(tmp_path: Path) -> None:
         tmp_path / "out" / "oil_products_timeseries.csv", encoding="utf-8-sig"
     )
     assert ts.loc[1, "period"] == "2024m2"
-    assert ts.loc[1, PRODUCTS].isna().all()
+    assert ts[PRODUCTS].iloc[1].isna().all()
 
 
 def test_build_also_to(workbook: Path, tmp_path: Path) -> None:
