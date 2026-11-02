@@ -155,8 +155,9 @@ uv run pytest
 ```
 
 CI (`.github/workflows/ci.yml`) runs the same gate on every push and pull
-request; `.github/workflows/docs.yml` builds the documentation and publishes
-it to GitHub Pages. Hooks: `uvx pre-commit install`. See [AGENTS.md](AGENTS.md)
+request; `.github/workflows/docs.yml` builds the documentation and, once the
+repository is public, publishes it to GitHub Pages (Pages needs a paid plan for
+private repositories). Hooks: `uvx pre-commit install`. See [AGENTS.md](AGENTS.md)
 for conventions and the release process.
 
 ## Changelog
