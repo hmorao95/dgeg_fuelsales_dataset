@@ -9,3 +9,7 @@ _archive/
 Thumbs.db
 .DS_Store
 desktop.ini
+
+# Python
+__pycache__/
+*.pyc

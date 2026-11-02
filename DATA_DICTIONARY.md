@@ -1,22 +1,22 @@
 # Data dictionary — DGEG fuel sales
 
-Applies to `output/oil_products_panel.*`, `output/oil_products_wide.*` and
+Applies to `output/oil_products_panel.csv`, `output/oil_products_wide.*` and
 `output/oil_products_timeseries.*`.
 
-## Panel files (`oil_products_panel.dta` / `.csv`)
+## Panel file (`oil_products_panel.csv`)
 
 Long format: one row per product × month (13,120 rows, 50 products).
 
 | Column | Description |
 |---|---|
-| `period` | Month in Stata monthly format (`.csv` only). |
-| `date_monthly` | Month; Stata `%tm` in the `.dta`, ISO `YYYY-MM-01` in the `.csv`. |
+| `period` | Month as `YYYYmM`, e.g. `1995m1`. |
+| `date_monthly` | First day of the month, ISO date `YYYY-MM-01`. |
 | `year`, `month` | Calendar year and month. |
-| `product_id` | Numeric product code 1–50 (alphabetical); value-labelled in the `.dta`. |
+| `product_id` | Numeric product code 1–50, in alphabetical order of `product`. |
 | `product` | Product name, as in the wide files' column headers. |
 | `consumption` | Sales in tonnes; missing where the product was listed but not reported. |
 
-In Stata: `xtset product_id date_monthly`.
+Panel index: (`product_id`, `date_monthly`).
 
 ## Wide and time-series files
 
@@ -24,7 +24,7 @@ In Stata: `xtset product_id date_monthly`.
 
 | Column | Description |
 |---|---|
-| `period` | Month in Stata monthly format, e.g. `1995m1`, `2026m8`. |
+| `period` | Month as `YYYYmM`, e.g. `1995m1`, `2026m8`. |
 | `date_monthly` | First day of the month, ISO date `YYYY-MM-01` (wide files only). |
 
 Coverage: **1995m1 – 2026m8**, monthly. `oil_products_timeseries.*` has a

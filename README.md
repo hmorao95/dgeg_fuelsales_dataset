@@ -7,17 +7,18 @@ Reorganized copy of the original `dgeg_fuel` project. The original folder was le
 ```
 dgeg_fuel_organized/
 ├── code/
-│   ├── main.do        # Stata pipeline: builds panel + wide dataset
+│   ├── build.py       # builds all output/ files from the workbook
+│   ├── update_dgeg.py # adds newly published DGEG months to the workbook
 │   └── notas.txt      # Notes on product-name assumptions / imputations
 ├── data/
 │   ├── raw/
 │   │   ├── dgeg/       # DGEG sources: yearly fuel_sales_YYYY.*, pgp, pma
 │   │   └── eurostat/   # Eurostat nrg_* extracts
 │   └── processed/
-│       ├── dataset_fuel_sales.xlsx   # INPUT to main.do (one sheet per year)
+│       ├── dataset_fuel_sales.xlsx   # source workbook (one sheet per year)
 │       └── complete_fuel_sales.xlsx
 ├── output/                           # all cover 1995m1–2026m8
-│   ├── oil_products_panel.dta / .csv       # long panel (product × month)
+│   ├── oil_products_panel.csv              # long panel (product × month)
 │   ├── oil_products_wide.xlsx / .csv       # wide: one column per product
 │   └── oil_products_timeseries.xlsx / .csv # wide, gap-free monthly index
 └── _archive/          # duplicates, stale Excel lock file, loose originals
@@ -25,10 +26,31 @@ dgeg_fuel_organized/
 
 ## Running
 
-`main.do` sets `$root` to this folder and derives all paths from it.
-If you move the folder, update the single `global root` line at the top.
+Python 3.10+ with the packages in `requirements.txt`:
 
-Pipeline: `data/processed/dataset_fuel_sales.xlsx` → `output/oil_products_panel.dta` → `output/oil_products_wide.xlsx`.
+```bash
+pip install -r requirements.txt
+```
+
+Rebuild every file in `output/` from the workbook:
+
+```bash
+python code/build.py
+```
+
+Monthly update, when DGEG publishes a new month:
+
+```bash
+python code/update_dgeg.py --download
+python code/build.py
+```
+
+`update_dgeg.py --download` fetches the latest *Vendas mensais* file from DGEG into
+`data/raw/dgeg/`, writes every published month of that year into the workbook, and
+reports any values DGEG revised. You can also pass a file you downloaded yourself:
+`python code/update_dgeg.py path/to/dgeg-omn-YYYY-MM.xlsx`.
+
+Pipeline: DGEG `dgeg-omn-YYYY-MM.xlsx` → `data/processed/dataset_fuel_sales.xlsx` → `output/`.
 
 ## Documentation & license
 
