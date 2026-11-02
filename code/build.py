@@ -9,10 +9,13 @@ Writes to output/:
   oil_products_wide.csv / .xlsx       one column per product
   oil_products_timeseries.csv / .xlsx same, gap-free monthly index
 
-Run:  python code/build.py
+Run:  python code/build.py [--also-to DIR ...]
+      --also-to copies the output files to other folders as well.
 """
 from pathlib import Path
+import argparse
 import re
+import shutil
 
 import numpy as np
 import openpyxl
@@ -90,7 +93,16 @@ def read_panel():
     return p[published].sort_values(["product", "year", "month"], kind="stable").reset_index(drop=True)
 
 
+OUTPUTS = ["oil_products_panel.csv", "oil_products_wide.csv", "oil_products_wide.xlsx",
+           "oil_products_timeseries.csv", "oil_products_timeseries.xlsx"]
+
+
 def main():
+    parser = argparse.ArgumentParser(description="Build output/ from the workbook.")
+    parser.add_argument("--also-to", nargs="+", default=[], metavar="DIR",
+                        help="also copy the output files to these folders")
+    args = parser.parse_args()
+
     p = read_panel()
     p["period"] = p["year"].astype(str) + "m" + p["month"].astype(str)
     p["date_monthly"] = pd.to_datetime(dict(year=p["year"], month=p["month"], day=1))
@@ -120,6 +132,11 @@ def main():
 
     print(f"panel: {len(panel)} rows, {len(ids)} products | "
           f"wide/time series: {period[0]} -> {period[-1]} ({len(period)} months)")
+
+    for folder in map(Path, args.also_to):
+        for name in OUTPUTS:
+            shutil.copy2(OUT / name, folder / name)
+        print("copied outputs to", folder)
 
 
 if __name__ == "__main__":

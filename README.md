@@ -38,6 +38,8 @@ Rebuild every file in `output/` from the workbook:
 python code/build.py
 ```
 
+Add `--also-to DIR` to copy the output files to another folder as well.
+
 Monthly update, when DGEG publishes a new month:
 
 ```bash
