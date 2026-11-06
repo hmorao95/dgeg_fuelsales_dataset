@@ -41,7 +41,7 @@ Example:
 
 Command line:
     dgeg-fuelsales refresh
-    dgeg-fuelsales update --file data/raw/dgeg/dgeg-omn-2026-08.xlsx
+    dgeg-fuelsales update --file data/raw/dgeg/dgeg-omn-2026-09.xlsx
     dgeg-fuelsales build --also-to ../dgeg_fuel
 """
 
@@ -1061,7 +1061,7 @@ def main() -> None:
     become flags. For example::
 
         dgeg-fuelsales refresh
-        dgeg-fuelsales update --file data/raw/dgeg/dgeg-omn-2026-08.xlsx
+        dgeg-fuelsales update --file data/raw/dgeg/dgeg-omn-2026-09.xlsx
         dgeg-fuelsales build --also-to ../dgeg_fuel
 
     An expected error (an unexpected file layout, a network failure, a missing

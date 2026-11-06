@@ -24,10 +24,10 @@ Panel index: (`product_id`, `date_monthly`).
 
 | Column | Description |
 |---|---|
-| `period` | Month as `YYYYmM`, e.g. `1995m1`, `2026m8`. |
+| `period` | Month as `YYYYmM`, e.g. `1995m1`, `2026m9`. |
 | `date_monthly` | First day of the month, ISO date `YYYY-MM-01` (wide files only). |
 
-Coverage: **1995m1 – 2026m8**, monthly. `oil_products_timeseries.*` has a
+Coverage: **1995m1 – 2026m9**, monthly. `oil_products_timeseries.*` has a
 gap-free monthly index; blank cells mean the product had no reported sales that month.
 
 ## Units & conventions

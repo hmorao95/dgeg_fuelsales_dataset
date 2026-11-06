@@ -19,7 +19,7 @@ a time:
 
 ```bash
 uv run dgeg-fuelsales download
-uv run dgeg-fuelsales update --file data/raw/dgeg/dgeg-omn-2026-08.xlsx
+uv run dgeg-fuelsales update --file data/raw/dgeg/dgeg-omn-2026-09.xlsx
 uv run dgeg-fuelsales build
 ```
 

@@ -1,6 +1,6 @@
 [project]
 name = "dgeg-fuelsales"
-version = "1.1.0"
+version = "1.2.0"
 description = "Monthly sales of 50 oil products in Portugal (tonnes), 1995m1 onwards, from DGEG statistics, with a Python pipeline to update and rebuild the dataset."
 readme = "README.md"
 requires-python = ">=3.10"

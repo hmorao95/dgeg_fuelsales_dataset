@@ -679,7 +679,7 @@ wheels = [
 
 [[package]]
 name = "dgeg-fuelsales"
-version = "1.1.0"
+version = "1.2.0"
 source = { editable = "." }
 default-groups = ["dev", "typing"]
 dependencies = [
