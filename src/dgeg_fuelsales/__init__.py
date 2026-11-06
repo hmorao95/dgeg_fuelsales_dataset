@@ -12,11 +12,13 @@ Exports:
     read_dgeg_file: Parse a DGEG file into its published months.
     update_workbook: Write those months into the source workbook.
     read_panel: Read the workbook into a long product x month table.
-    build: Write the panel, wide and time-series files.
+    seasonally_adjust: Seasonally adjust each product's series (STL).
+    build: Write the panel, wide, time-series and adjusted files.
     DgegFile, Revision, UpdateResult, BuildResult: Result types.
     DEFAULT_WORKBOOK, DEFAULT_RAW_DIR, DEFAULT_OUTPUTS: Default paths, relative
         to the repository root.
     MONTHS, OUTPUT_FILES: Month names and output file names.
+    SA_MIN_MONTHS, SA_MAX_ANNUAL_GAP: Which series are seasonally adjusted.
     main: Entry point for the ``python-fire`` command-line interface.
 """
 
@@ -28,6 +30,8 @@ from dgeg_fuelsales.core import (
     DEFAULT_WORKBOOK,
     MONTHS,
     OUTPUT_FILES,
+    SA_MAX_ANNUAL_GAP,
+    SA_MIN_MONTHS,
     BuildResult,
     DgegFile,
     Revision,
@@ -38,6 +42,7 @@ from dgeg_fuelsales.core import (
     main,
     read_dgeg_file,
     read_panel,
+    seasonally_adjust,
     update_workbook,
 )
 
@@ -47,6 +52,8 @@ __all__ = [
     "DEFAULT_WORKBOOK",
     "MONTHS",
     "OUTPUT_FILES",
+    "SA_MAX_ANNUAL_GAP",
+    "SA_MIN_MONTHS",
     "BuildResult",
     "DgegFile",
     "Revision",
@@ -57,5 +64,6 @@ __all__ = [
     "main",
     "read_dgeg_file",
     "read_panel",
+    "seasonally_adjust",
     "update_workbook",
 ]

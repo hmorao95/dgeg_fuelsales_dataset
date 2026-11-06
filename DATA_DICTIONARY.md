@@ -1,11 +1,11 @@
 # Data dictionary — DGEG fuel sales
 
-Applies to `outputs/oil_products_panel.csv`, `outputs/oil_products_wide.*` and
-`outputs/oil_products_timeseries.*`.
+Applies to `outputs/oil_products_panel.csv`, `outputs/oil_products_wide.*`,
+`outputs/oil_products_timeseries.*` and `outputs/oil_products_timeseries_sa.*`.
 
 ## Panel file (`oil_products_panel.csv`)
 
-Long format: one row per product × month (13,120 rows, 50 products).
+Long format: one row per product × month (13,152 rows, 50 products).
 
 | Column | Description |
 |---|---|
@@ -29,6 +29,26 @@ Panel index: (`product_id`, `date_monthly`).
 
 Coverage: **1995m1 – 2026m9**, monthly. `oil_products_timeseries.*` has a
 gap-free monthly index; blank cells mean the product had no reported sales that month.
+
+## Seasonally adjusted file (`oil_products_timeseries_sa.*`)
+
+Same layout as `oil_products_timeseries.*` (`period` + 50 product columns, tonnes),
+with each product's sales seasonally adjusted:
+
+- **Method:** STL (Cleveland et al., 1990) on log sales, 12-month period,
+  13-term seasonal smoother, robust weights against one-off spikes. Adjusted
+  sales = sales ÷ seasonal factor, with the factors rescaled so any 12
+  consecutive months average 1 (as in X-11), so the adjusted series keeps the
+  original's level. Values rounded to 0.1 t.
+- **Not adjusted (blank column):** products with less than 36 months of data, a
+  gap, or a month at zero, and products whose adjusted annual totals differ from
+  the original's by more than 5% (median over full years). With data to
+  2026m9, 31 of 50 products are adjusted.
+- **Not included:** trading-day and Easter effects. These are left in the series.
+- **Revisions:** the whole history is re-estimated at every update, so past
+  adjusted values change slightly when DGEG publishes a new month.
+- Aggregates (ⓐ) are adjusted directly, not as the sum of adjusted components,
+  so they need not add up exactly.
 
 ## Units & conventions
 

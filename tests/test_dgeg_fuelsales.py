@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import fire
+import numpy as np
 import openpyxl
 import pandas as pd
 import pytest
@@ -22,12 +23,14 @@ import requests
 from dgeg_fuelsales import (
     MONTHS,
     OUTPUT_FILES,
+    SA_MIN_MONTHS,
     build,
     core,
     download_latest,
     latest_file_url,
     read_dgeg_file,
     read_panel,
+    seasonally_adjust,
     update_workbook,
 )
 
@@ -539,6 +542,13 @@ def test_build_writes_outputs(workbook: Path, tmp_path: Path) -> None:
     assert list(wide.columns[:2]) == ["period", "date_monthly"]
     assert len(wide) == 14
 
+    # 14 months is too short to adjust: same layout, every value blank
+    sa = pd.read_csv(
+        tmp_path / "out" / "oil_products_timeseries_sa.csv", encoding="utf-8-sig"
+    )
+    assert list(sa.columns) == list(ts.columns)
+    assert sa[PRODUCTS].isna().all().all()
+
 
 def test_build_fills_gaps_in_index(tmp_path: Path) -> None:
     """A month with no data inside the range still gets a row."""
@@ -574,6 +584,69 @@ def test_build_matches_committed_outputs(tmp_path: Path) -> None:
         fresh = pd.read_csv(tmp_path / name, encoding="utf-8-sig")
         committed = pd.read_csv(ROOT / "outputs" / name, encoding="utf-8-sig")
         pd.testing.assert_frame_equal(fresh, committed, check_exact=False, rtol=1e-12)
+    # Adjusted values are rounded to 0.1 t; other platforms' floating point can
+    # flip the last digit, so compare with a small absolute tolerance.
+    name = "oil_products_timeseries_sa.csv"
+    fresh = pd.read_csv(tmp_path / name, encoding="utf-8-sig")
+    committed = pd.read_csv(ROOT / "outputs" / name, encoding="utf-8-sig")
+    pd.testing.assert_frame_equal(fresh, committed, check_exact=False, rtol=0, atol=0.2)
+
+
+# --------------------------------------------------------------------------- #
+# Seasonal adjustment
+# --------------------------------------------------------------------------- #
+
+
+def seasonal_series(years: int = 10) -> pd.Series:
+    """A growing series with a fixed multiplicative seasonal pattern."""
+    index = pd.date_range("2010-01-01", periods=12 * years, freq="MS")
+    pattern = 1 + 0.3 * np.sin(2 * np.pi * (index.month - 1) / 12)
+    trend = 1000 * 1.002 ** np.arange(len(index))
+    return pd.Series(trend * pattern, index=index)
+
+
+def test_seasonally_adjust_removes_seasonality() -> None:
+    """The adjusted series follows the trend and keeps the annual totals."""
+    s = seasonal_series()
+    sa = seasonally_adjust(s.to_frame("A"))["A"]
+    trend = 1000 * 1.002 ** np.arange(len(s))
+    assert np.abs(sa.to_numpy() / trend - 1).max() < 0.02
+    years = pd.DatetimeIndex(s.index).year
+    totals = sa.groupby(years).sum() / s.groupby(years).sum()
+    assert np.abs(totals - 1).max() < 0.01
+    assert sa.round(1).equals(sa)  # rounded to 0.1 t
+
+
+def test_seasonally_adjust_skips_unsuitable_series() -> None:
+    """Short, gappy or non-positive series are left blank."""
+    s = seasonal_series()
+    gappy, zero, late = s.copy(), s.copy(), s.copy()
+    gappy.iloc[50] = np.nan
+    zero.iloc[50] = 0
+    late.iloc[: len(s) - SA_MIN_MONTHS + 1] = np.nan  # 35 months left
+    wide = pd.DataFrame({"gappy": gappy, "zero": zero, "late": late, "empty": np.nan})
+    assert seasonally_adjust(wide).isna().all().all()
+
+
+def test_seasonally_adjust_trims_to_published_span() -> None:
+    """Months before a product's first figure stay blank."""
+    s = seasonal_series()
+    s.iloc[:24] = np.nan
+    sa = seasonally_adjust(s.to_frame("A"))["A"]
+    assert sa.iloc[:24].isna().all()
+    assert sa.iloc[24:].notna().all()
+
+
+def test_seasonally_adjust_quality_check(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A product whose annual totals move too much is not published."""
+    monkeypatch.setattr("dgeg_fuelsales.core.SA_MAX_ANNUAL_GAP", -1.0)
+    assert seasonally_adjust(seasonal_series().to_frame("A")).isna().all().all()
+
+
+def test_annual_gap_needs_a_full_year() -> None:
+    """Without a complete calendar year the gap is infinite."""
+    s = seasonal_series().iloc[3:14]
+    assert core._annual_gap(s, s) == float("inf")
 
 
 # --------------------------------------------------------------------------- #
@@ -602,7 +675,7 @@ def test_cli_build(workbook: Path, tmp_path: Path) -> None:
         str(extra),
     )
     assert "2025m1 -> 2026m2 (14 months)" in out
-    assert "11 files written" in out
+    assert f"{2 * len(OUTPUT_FILES) + 1} files written" in out
     assert (extra / "oil_products_panel.csv").exists()
 
 
