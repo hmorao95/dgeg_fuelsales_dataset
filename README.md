@@ -10,7 +10,7 @@
 [![Keep a Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-orange.svg)](CHANGELOG.md)
 [![License: CC BY 4.0](https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey.svg)](LICENSE)
 
-Monthly sales of **50 oil products in Portugal**, in tonnes, **1995m1–2026m8**,
+Monthly sales of **50 oil products in Portugal**, in tonnes, **1995m1–2026m9**,
 compiled from the statistics published by DGEG (Direção-Geral de Energia e
 Geologia), plus a small, typed Python package that keeps the dataset current.
 
@@ -94,7 +94,7 @@ build(also_to=["../my_folder"])
 uv run dgeg-fuelsales refresh                      # download + update + build
 uv run dgeg-fuelsales download                     # newest DGEG file -> data/raw/dgeg/
 uv run dgeg-fuelsales update                       # download, then add months to the workbook
-uv run dgeg-fuelsales update --file data/raw/dgeg/dgeg-omn-2026-08.xlsx
+uv run dgeg-fuelsales update --file data/raw/dgeg/dgeg-omn-2026-09.xlsx
 uv run dgeg-fuelsales build                        # rebuild outputs/ from the workbook
 uv run dgeg-fuelsales build --also-to ../dgeg_fuel # also copy outputs + workbook there
 ```
@@ -170,7 +170,7 @@ If you use this dataset, please cite it (see [CITATION.cff](CITATION.cff);
 GitHub renders a "Cite this repository" button):
 
 > Morão, H. (2026). *DGEG fuel sales dataset: monthly oil-product sales in
-> Portugal, 1995m1–2026m8* (v1.1.0) [Data set].
+> Portugal, 1995m1–2026m9* (v1.2.0) [Data set].
 > https://github.com/hmorao95/dgeg_fuelsales_dataset
 
 Please also cite the original source, DGEG.
