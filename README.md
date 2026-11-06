@@ -18,9 +18,10 @@ Geologia), plus a small, typed Python package that keeps the dataset current.
 
 | File | Shape | Contents |
 |---|---|---|
-| [`oil_products_timeseries.csv`](outputs/oil_products_timeseries.csv) · [`.xlsx`](outputs/oil_products_timeseries.xlsx) | 380 × 51 | Full monthly time series: `period` + one column per product, gap-free from 1995m1 |
-| [`oil_products_wide.csv`](outputs/oil_products_wide.csv) · [`.xlsx`](outputs/oil_products_wide.xlsx) | 380 × 52 | Same, with an ISO `date_monthly` column as well |
-| [`oil_products_panel.csv`](outputs/oil_products_panel.csv) | 13,120 × 7 | Long panel: one row per product × month |
+| [`oil_products_timeseries.csv`](outputs/oil_products_timeseries.csv) · [`.xlsx`](outputs/oil_products_timeseries.xlsx) | 381 × 51 | Full monthly time series: `period` + one column per product, gap-free from 1995m1 |
+| [`oil_products_timeseries_sa.csv`](outputs/oil_products_timeseries_sa.csv) · [`.xlsx`](outputs/oil_products_timeseries_sa.xlsx) | 381 × 51 | The same series **seasonally adjusted** (STL); blank for products too short or irregular to adjust |
+| [`oil_products_wide.csv`](outputs/oil_products_wide.csv) · [`.xlsx`](outputs/oil_products_wide.xlsx) | 381 × 52 | Same as the time series, with an ISO `date_monthly` column as well |
+| [`oil_products_panel.csv`](outputs/oil_products_panel.csv) | 13,152 × 7 | Long panel: one row per product × month |
 
 Every column, unit and aggregate is described in the
 [data dictionary](DATA_DICTIONARY.md). Some columns are totals of others

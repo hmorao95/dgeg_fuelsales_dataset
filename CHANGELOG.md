@@ -8,6 +8,14 @@ updates (new months from DGEG) are minor versions.
 
 ## [Unreleased]
 
+### Added
+
+- Seasonally adjusted series, `outputs/oil_products_timeseries_sa.csv` and
+  `.xlsx`, rebuilt by `build` and `refresh`: STL on log sales with factors
+  normalised to keep the level, for the 31 products long and regular enough to
+  adjust (see the data dictionary). New function `seasonally_adjust`;
+  `statsmodels` is now a dependency.
+
 ## [1.2.0] - 2026-11-06
 
 ### Added

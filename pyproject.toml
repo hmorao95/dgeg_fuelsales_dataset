@@ -12,6 +12,7 @@ dependencies = [
     "pandas>=2.2",
     "openpyxl>=3.1",
     "requests>=2.28",
+    "statsmodels>=0.14",
     # Shared plumbing (logging, CLI helpers), by tag.
     "wrapkit @ git+https://github.com/hmorao95/wrapkit@v0.2.1",
 ]

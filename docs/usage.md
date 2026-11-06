@@ -33,7 +33,14 @@ progress on stderr, and `--log-file run.log` appends a full log.
 ## From Python
 
 ```python
-from dgeg_fuelsales import build, download_latest, read_dgeg_file, read_panel, update_workbook
+from dgeg_fuelsales import (
+    build,
+    download_latest,
+    read_dgeg_file,
+    read_panel,
+    seasonally_adjust,
+    update_workbook,
+)
 
 path = download_latest()  # data/raw/dgeg/dgeg-omn-YYYY-MM.xlsx
 dgeg = read_dgeg_file(path)  # DgegFile(year, months)
@@ -42,8 +49,23 @@ for r in result.revisions:
     print(r.month, r.product, r.old, "->", r.new)
 
 panel = read_panel()  # long DataFrame: year, month, product, consumption
+import pandas as pd
+
+ts = pd.read_csv("outputs/oil_products_timeseries.csv", encoding="utf-8-sig")
+ts.index = pd.date_range("1995-01-01", periods=len(ts), freq="MS")
+sa = seasonally_adjust(ts.drop(columns="period"))  # same shape; blank where not adjusted
 build(also_to=["../my_folder"])  # write outputs/ and copy them
 ```
+
+## Seasonal adjustment
+
+`build` also writes `outputs/oil_products_timeseries_sa.csv` / `.xlsx`, each
+product seasonally adjusted with STL ({func}`~dgeg_fuelsales.seasonally_adjust`).
+Products that are too short, have gaps or zero months, or fail the
+annual-totals check are left blank; `--log-level INFO` names the products that
+fail the check. The thresholds are {data}`~dgeg_fuelsales.SA_MIN_MONTHS` and
+{data}`~dgeg_fuelsales.SA_MAX_ANNUAL_GAP`. The method is described in the
+[data dictionary](data.md).
 
 ## If DGEG changes its file
 

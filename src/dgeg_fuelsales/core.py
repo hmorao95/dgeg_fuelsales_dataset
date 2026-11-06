@@ -62,6 +62,7 @@ import openpyxl  # Reads and writes the source workbook, formulas included.
 import pandas as pd  # The tabular data type for every output.
 import requests  # HTTP client for the DGEG website.
 from openpyxl.utils import range_boundaries  # "B2:D2" -> column/row bounds.
+from statsmodels.tsa.seasonal import STL  # Seasonal adjustment (loess).
 from wrapkit.cli import run  # Shared python-fire runner (errors -> exit 1).
 from wrapkit.log import configure_logging, package_logger  # Shared logging.
 
@@ -79,6 +80,8 @@ __all__ = [
     "DEFAULT_WORKBOOK",
     "MONTHS",
     "OUTPUT_FILES",
+    "SA_MAX_ANNUAL_GAP",
+    "SA_MIN_MONTHS",
     "BuildResult",
     "DgegFile",
     "Revision",
@@ -89,6 +92,7 @@ __all__ = [
     "main",
     "read_dgeg_file",
     "read_panel",
+    "seasonally_adjust",
     "update_workbook",
 ]
 
@@ -130,7 +134,20 @@ OUTPUT_FILES = (
     "oil_products_wide.xlsx",
     "oil_products_timeseries.csv",
     "oil_products_timeseries.xlsx",
+    "oil_products_timeseries_sa.csv",
+    "oil_products_timeseries_sa.xlsx",
 )
+
+#: Shortest series (months) that is seasonally adjusted: three full years.
+SA_MIN_MONTHS = 36
+#: Quality check: a product is published adjusted only if, over its full
+#: calendar years, the median gap between adjusted and original annual totals
+#: is at most this share. It drops small, erratic series whose seasonal
+#: pattern STL cannot pin down (e.g. lighting kerosene).
+SA_MAX_ANNUAL_GAP = 0.05
+#: STL seasonal smoother length (odd, >= 7). 13 lets the seasonal pattern
+#: drift slowly over the years without following one-off spikes.
+_STL_SEASONAL = 13
 
 #: DGEG row label (footnote marker removed) -> workbook column.
 _COLUMNS = {
@@ -792,6 +809,119 @@ def read_panel(workbook: str | Path = DEFAULT_WORKBOOK) -> pd.DataFrame:
     )
 
 
+def _adjustable(s: pd.Series) -> pd.Series | None:
+    """
+    Trim a series to its published span if it can be seasonally adjusted.
+
+    Args:
+        s (pd.Series): One product's monthly values (NaN = no figure).
+
+    Returns:
+        pd.Series | None: The values from the first to the last figure, or
+        ``None`` when that span is shorter than :data:`SA_MIN_MONTHS`, has a
+        gap, or has a month at zero or below (the adjustment works on logs).
+    """
+    first, last = s.first_valid_index(), s.last_valid_index()
+    if first is None:
+        return None
+    span = s.loc[first:last]
+    if len(span) < SA_MIN_MONTHS or span.isna().any() or (span <= 0).any():
+        return None
+    return span
+
+
+def seasonally_adjust(wide: pd.DataFrame) -> pd.DataFrame:
+    """
+    Seasonally adjust each product's monthly sales with STL.
+
+    Each eligible series (see :func:`_adjustable`) is decomposed as
+    ``log(sales) = trend + seasonal + remainder`` by STL (Cleveland et al.,
+    1990), with a 12-month period, a 13-term seasonal smoother and robust
+    weights so one-off spikes do not leak into the seasonal pattern. The
+    adjusted series is ``sales / factor``, with ``factor = exp(seasonal)``
+    rescaled by :func:`_normalise` so the factors average one over any 12
+    months: multiplicative, so the seasonal swing scales with the level, and
+    the adjusted series keeps the original's level. A product whose adjusted
+    annual totals stray from the original's by more than
+    :data:`SA_MAX_ANNUAL_GAP` (median over full years) is left out. STL does
+    not adjust for trading days or Easter. Every rebuild re-estimates the
+    whole series, so past adjusted values move slightly as new months arrive.
+
+    Args:
+        wide (pd.DataFrame): One column per product on a gap-free monthly
+            ``DatetimeIndex`` of month starts.
+
+    Returns:
+        pd.DataFrame: Same index and columns, adjusted values rounded to 0.1
+        tonne; NaN for products (or months) that are not adjusted.
+    """
+    sa = pd.DataFrame(np.nan, index=wide.index, columns=wide.columns)
+    for product in wide.columns:
+        span = _adjustable(wide[product].astype(float))
+        if span is None:
+            continue
+        values = span.to_numpy(dtype=float)
+        fit = STL(np.log(values), period=12, seasonal=_STL_SEASONAL, robust=True).fit()
+        factors = _normalise(np.exp(np.asarray(fit.seasonal, dtype=float)))
+        adjusted = pd.Series(values / factors, index=span.index)
+        gap = _annual_gap(span, adjusted)
+        if gap > SA_MAX_ANNUAL_GAP:
+            _log.info(
+                "Not adjusting %s: annual totals off by %.1f%%", product, gap * 100
+            )
+            continue
+        sa.loc[span.index, product] = adjusted.round(1)
+    return sa
+
+
+def _annual_gap(original: pd.Series, adjusted: pd.Series) -> float:
+    """
+    Median gap between adjusted and original totals over full calendar years.
+
+    Seasonal adjustment should move sales between months, not change a year's
+    total much; X-13 reports the same comparison.
+
+    Args:
+        original (pd.Series): Sales, indexed by month start dates.
+        adjusted (pd.Series): Adjusted sales on the same index.
+
+    Returns:
+        float: Median of ``|adjusted total / original total - 1|`` over
+        calendar years with all 12 months (infinite if there is none).
+    """
+    years = pd.DatetimeIndex(original.index).year
+    full = original.groupby(years).count() == len(MONTHS)
+    totals = pd.DataFrame(
+        {"orig": original.groupby(years).sum(), "sa": adjusted.groupby(years).sum()}
+    )[full]
+    if totals.empty:
+        return float("inf")
+    return float((totals["sa"] / totals["orig"] - 1).abs().median())
+
+
+def _normalise(factors: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """
+    Rescale seasonal factors so any 12 consecutive months average one.
+
+    STL's seasonal component averages zero in logs, so ``exp(seasonal)``
+    averages slightly above one and the adjusted series would sit below the
+    original on average (by about 15% for strongly seasonal products such as
+    heating gas oil). As in X-11, each factor is divided by a centred 2x12
+    moving average of the factors; the six months at each end reuse the
+    nearest full average.
+
+    Args:
+        factors (npt.NDArray[np.float64]): Raw seasonal factors (at least 13).
+
+    Returns:
+        npt.NDArray[np.float64]: Factors whose 12-month averages are one.
+    """
+    weights = np.r_[0.5, np.ones(11), 0.5] / 12
+    centred = np.convolve(factors, weights, mode="valid")
+    level = np.r_[np.full(6, centred[0]), centred, np.full(6, centred[-1])]
+    return np.asarray(factors / level, dtype=np.float64)
+
+
 def build(
     workbook: str | Path = DEFAULT_WORKBOOK,
     outputs: str | Path = DEFAULT_OUTPUTS,
@@ -809,7 +939,10 @@ def build(
     * ``oil_products_wide.csv`` / ``.xlsx``: one column per product, led by
       ``period`` and ``date_monthly``;
     * ``oil_products_timeseries.csv`` / ``.xlsx``: the same wide table led by
-      ``period`` only.
+      ``period`` only;
+    * ``oil_products_timeseries_sa.csv`` / ``.xlsx``: the time series
+      seasonally adjusted by :func:`seasonally_adjust` (blank where a product
+      is not adjusted).
 
     The wide tables have a gap-free monthly index from the first to the last
     published month. CSVs are UTF-8 with a byte-order mark so Excel shows the
@@ -865,6 +998,16 @@ def build(
     ts.insert(0, "period", period)
     ts.to_excel(out / "oil_products_timeseries.xlsx", index=False)
     ts.to_csv(out / "oil_products_timeseries.csv", index=False, encoding="utf-8-sig")
+
+    sa = seasonally_adjust(wide).reset_index(drop=True)
+    sa.insert(0, "period", period)
+    sa.to_excel(out / "oil_products_timeseries_sa.xlsx", index=False)
+    sa.to_csv(out / "oil_products_timeseries_sa.csv", index=False, encoding="utf-8-sig")
+    _log.info(
+        "Seasonally adjusted %d of %d products",
+        int(sa.drop(columns="period").notna().any().sum()),
+        len(ids),
+    )
 
     files = [out / name for name in OUTPUT_FILES]
     for folder in map(Path, also_to):
