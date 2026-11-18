@@ -5,8 +5,8 @@ type: dataset
 authors:
   - family-names: "Morão"
     given-names: "Hugo"
-version: "1.2.0"
-date-released: "2026-11-06"
+version: "1.2.1"
+date-released: "2026-11-18"
 license: CC-BY-4.0
 repository-code: "https://github.com/hmorao95/dgeg_fuelsales_dataset"
 url: "https://github.com/hmorao95/dgeg_fuelsales_dataset"

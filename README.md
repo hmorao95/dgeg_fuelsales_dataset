@@ -170,7 +170,7 @@ If you use this dataset, please cite it (see [CITATION.cff](CITATION.cff);
 GitHub renders a "Cite this repository" button):
 
 > Morão, H. (2026). *DGEG fuel sales dataset: monthly oil-product sales in
-> Portugal, 1995m1–2026m9* (v1.2.0) [Data set].
+> Portugal, 1995m1–2026m9* (v1.2.1) [Data set].
 > https://github.com/hmorao95/dgeg_fuelsales_dataset
 
 Please also cite the original source, DGEG.
