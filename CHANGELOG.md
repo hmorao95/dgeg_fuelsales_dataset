@@ -8,6 +8,8 @@ updates (new months from DGEG) are minor versions.
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-11-18
+
 ### Changed
 
 - wrapkit is now pinned at
@@ -87,7 +89,8 @@ updates (new months from DGEG) are minor versions.
   panel and a wide table, with the raw DGEG and Eurostat files, a data
   dictionary, a CC BY 4.0 license and `CITATION.cff`.
 
-[Unreleased]: https://github.com/hmorao95/dgeg_fuelsales_dataset/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/hmorao95/dgeg_fuelsales_dataset/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/hmorao95/dgeg_fuelsales_dataset/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/hmorao95/dgeg_fuelsales_dataset/compare/c4cd6a6...v1.2.0
 [1.1.0]: https://github.com/hmorao95/dgeg_fuelsales_dataset/compare/6c49f5f...c4cd6a6
 [1.0.0]: https://github.com/hmorao95/dgeg_fuelsales_dataset/compare/a48e7fa...6c49f5f
