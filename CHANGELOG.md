@@ -8,6 +8,24 @@ updates (new months from DGEG) are minor versions.
 
 ## [Unreleased]
 
+### Changed
+
+- wrapkit is now pinned at
+  [v0.2.9](https://github.com/hmorao95/wrapkit/releases/tag/v0.2.9) (was
+  v0.2.1). The package uses only wrapkit's logger, logging setup and Fire
+  runner, so the dataset and the command's output are unchanged:
+  - The CLI's one-line `Error:` message is now masked by any `RedactFilter`
+    on the package logger. DGEG needs no key and the package installs no
+    filter, so error messages print exactly as before. The other
+    `RedactFilter` fixes (more HTTP loggers, tracebacks) do not apply for
+    the same reason.
+  - `snake` now drops accents (`Região` becomes `regiao`). The package does
+    not use `snake`: column names such as `Mercado de Aviação` keep their
+    spelling, and no column in `outputs/` is renamed.
+  - The fixes to incremental CSV updates, period parsing, the disk cache,
+    HTTP retries and output paths do not apply: the package does not use
+    those helpers.
+
 ## [1.2.0] - 2026-11-06
 
 ### Added
