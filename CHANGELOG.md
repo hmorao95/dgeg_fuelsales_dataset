@@ -8,6 +8,15 @@ updates (new months from DGEG) are minor versions.
 
 ## [Unreleased]
 
+### Changed
+
+- wrapkit is now pinned at
+  [v0.2.10](https://github.com/hmorao95/wrapkit/releases/tag/v0.2.10) (was
+  v0.2.9). Its one fix, a cached answer dated ahead of the clock now counts as
+  expired, is in wrapkit's `DiskCache`, which the package does not use (it
+  takes only wrapkit's logger, logging setup and Fire runner), so the dataset
+  and the command's output are unchanged.
+
 ## [1.2.1] - 2026-11-18
 
 ### Changed
