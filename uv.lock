@@ -729,7 +729,7 @@ requires-dist = [
     { name = "openpyxl", specifier = ">=3.1" },
     { name = "pandas", specifier = ">=2.2" },
     { name = "requests", specifier = ">=2.28" },
-    { name = "wrapkit", git = "https://github.com/hmorao95/wrapkit?rev=v0.2.9" },
+    { name = "wrapkit", git = "https://github.com/hmorao95/wrapkit?rev=v0.2.10" },
 ]
 
 [package.metadata.requires-dev]
@@ -2720,8 +2720,8 @@ wheels = [
 
 [[package]]
 name = "wrapkit"
-version = "0.2.9"
-source = { git = "https://github.com/hmorao95/wrapkit?rev=v0.2.9#4eeb288deb2e07ba1fc9f186a8adc200b36e70fd" }
+version = "0.2.10"
+source = { git = "https://github.com/hmorao95/wrapkit?rev=v0.2.10#318f276c9b1d74e18efcbb342adc2cd2019fc8be" }
 dependencies = [
     { name = "colorlog" },
     { name = "fire" },
